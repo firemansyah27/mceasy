@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+  <t t-name="external_sale_invoice.ExternalSaleOrderList">
+    <t t-if="state.loading">
+      <p>Loading...</p>
+    </t>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Info</h5>
+        <p class="card-text mb-1"><strong>Name:</strong> <t t-esc="partnerName" /></p>
+        <p class="card-text mb-1"><strong>Email:</strong> <t t-esc="partnerEmail" /></p>
+        <p class="card-text"><strong>Address:</strong> <t t-esc="partnerAddress" /></p>
+      </div>
+    </div>
+    <t t-if="state.saleOrders.length === 0">
+      <p>No Sale Order found.</p>
+    </t>
+    <t t-else="">
+      <div class="accordion" id="saleOrderAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+              aria-expanded="true" aria-controls="collapseOne">
+              Sale Order
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+            data-bs-parent="#saleOrderAccordion">
+            <div class="accordion-body">
+              
+                <table class="table table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Number</th>
+                      <th>Creation Date</th>
+                      <th>Customer</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <t t-foreach="state.saleOrders" t-as="o" t-key="o.id">
+                      <tr>
+                        <td><a t-att-href="o.url"><t t-esc="o.name"/></a></td>
+                        <td><t t-esc="o.create_date" /></td>
+                        <td><t t-esc="o.partner_name" /></td>
+                        <td><t t-esc="o.amount_total" /></td>
+                        <td>
+                          <span t-att-class="getStatusClass(o.state)">
+                            <t t-esc="o.state"/>
+                          </span>
+                        </td>
+                      </tr>
+                    </t>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+    </t>
+  </t>
+</templates>

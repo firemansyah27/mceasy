@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_sale_invoice_breadcrumbs" name="External layout : Sale Order" inherit_id="portal.portal_breadcrumbs" priority="20">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name in ['saleordertree', 'saleorderform',]" t-attf-class="breadcrumb-item #{'active ' if not loan else ''}">
+                 <a t-if="page_name in ['saleorderform'] or saleorderform" t-attf-href="/external/sale-invoice?{{ keep_query() }}&amp;token={{ external_token }}">Sale Order</a>
+		
+                <t t-if="page_name == 'saleordertree' or saleordertree" t-else="">Sale Order</t>
+            </li>
+            <li t-if="sale_order_id and page_name == 'saleorderform'" class="breadcrumb-item active">
+                <t t-esc="sale_order_id.name"/> 
+            </li>
+        </xpath>
+    </template>
+    
+    <template id="external_sale_list_views" name="Sale Order List">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Sale Order</t>
+            </t>
+            <owl-component name="external_sale_invoice.ExternalSaleOrderList" />
+            <br/>
+        </t>
+    </template>
+
+
+    <template id="sale_order_detail" name="Sale Order detaul" inherit_id="portal.portal_sidebar" primary="True">
+        <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+            <div class="row mt16 o_portal_sale_sidebar">
+                <t t-call="portal.portal_record_sidebar">
+                    <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+                    <t t-set="entries">
+                        <owl-component name="external_sale_invoice.ButtonInvoice" t-att-props="json.dumps({'saleOrderId': sale_order_id.id})"/>
+                    </t>
+                </t>
+
+                <div id="content" class="col-12 col-lg justify-content-end">
+
+                    <div t-if="message" class="alert alert-danger alert-dismissible d-print-none" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <t t-out="message"/>
+                    </div>
+
+                    <div t-attf-class="card #{'pb-5' if report_type == 'html' else ''}" id="portal_sale_content">
+                        <div t-call="external_sale_invoice.sale_order_detail_content"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="sale_order_detail_content" name="Sale Order Detail Content">
+        <div id="introduction" t-attf-class="pb-2 pt-3 #{'card-header bg-white' if report_type == 'html' else ''}">
+            <h2 class="my-0">
+                <em t-out="sale_order_id.name"/>
+            </h2>
+        </div>
+
+        <div t-attf-class="#{'card-body' if report_type == 'html' else ''}">
+            <div id="informations">
+                <div class="row" id="so_date">
+                    <div class="mb-3 col-6">
+                        <strong>Vendor:</strong>
+                        <span t-field="sale_order_id.partner_id"/>
+                    </div>
+                    <div class="mb-3 col-6">
+                        <strong>Order Date:</strong>
+                        <span t-field="sale_order_id.date_order" />
+                    </div>
+                </div>
+            </div>
+
+            <section id="details" style="page-break-inside: auto;" class="mt32">
+                <div class="o_notebook d-flex w-100 horizontal flex-column">
+                    <div class="o_notebook_headers">
+                        <ul class="nav nav-tabs flex-row flex-nowrap">
+                            <li class="nav-item flex-nowrap cursor-pointer">
+                                <a class="nav-link active" href="#" role="tab" tabindex="0" name="order_lines">Order Lines</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="o_notebook_content tab-content">
+                        <div class="tab-pane active">
+                            <table t-att-data-order-id="sale_order_id.id" t-att-data-token="sale_order_id.access_token" class="table table-sm" id="sales_order_table">
+                                <thead class="bg-100">
+                                    <tr>
+                                        <th class="text-start" id="product_name_header">Products</th>
+                                        <th class="text-start" id="product_name_header">Description</th>
+                                        <th class="text-end">Quantity</th>
+                                        <th t-attf-class="text-end {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                                            <span>UOM</span>
+                                        </th>
+                                        <th t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                            Unit Price
+                                        </th>
+                                        <th t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                            Subtotal
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="sale_tbody">
+            
+                                    <t t-set="lines" t-value="sale_order_id.order_line"/>
+            
+                                    <t t-foreach="lines" t-as="line">
+                                        <tr>
+                                            <td id="product_name">
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td >
+                                                <div id="description">
+                                                    <span t-field="line.name"/>
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                <div id="quantity">
+                                                    <span t-field="line.product_uom_qty"/>
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                <span t-out="line.product_uom.name"/>
+                                            </td>
+                                            <td t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                                <div>
+                                                    <t t-out="line.price_unit" t-options='{"widget": "float", "decimal_precision": "Product Price"}'/>
+                                                </div>
+                                            </td>
+                                            <td >
+                                                <div id="subtotal">
+                                                    <span t-field="line.price_subtotal"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <div id="total" class="row" name="total" style="page-break-inside: avoid;">
+                                <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ms-auto">
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>
+                                                <span class="text-nowrap"> Total </span>
+                                            </td>
+                                            <td class="text-end o_price_total">
+                                                <span t-out="sale_order_id.amount_total" t-options='{"widget": "float", "decimal_precision": "Product Price"}'/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </template>
+</odoo>

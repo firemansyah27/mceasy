@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+  <t t-name="external_sale_invoice.ButtonInvoice">
+    <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
+        <li class="list-group-item d-grid align-content-start">
+            <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                <t t-if="state.invReqState != ''">
+                    <div class="btn-group flex-grow-1 mb-1">
+                        <a 
+                            id="request_or_download_invoice"
+                            t-att-class="state.invReqState == 'draft' ? 'btn btn-secondary o_print_btn o_portal_invoice_print d-block disabled' : 'btn btn-primary o_print_btn o_portal_invoice_print d-block'"
+                            t-att-aria-disabled="state.invReqState == 'draft'"
+                            t-on-click="downloadInvoice"
+                            title="Download Invoice" 
+                            target="_blank">
+                                <t t-if="state.invReqState == 'draft'">Requested</t>
+                                <t t-elif="state.invReqState == 'approved'"><i class="fa fa-print"/> Download Invoice</t>
+                        </a>
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="btn-group flex-grow-1 mb-1">
+                        <a class="btn btn-success o_print_btn o_portal_invoice_print d-block" id="request_invoice_report" t-on-click="requestInvoice" title="Request Invoice" target="_blank">Request Invoice</a>
+                    </div>
+                </t>
+            </div>
+        </li>
+    
+        <li class="navspy list-group-item ps-0 flex-grow-1" role="complementary">
+            <ul class="nav flex-column bs-sidenav"></ul>
+        </li>
+    </ul>
+  </t>
+</templates>

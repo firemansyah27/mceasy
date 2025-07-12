@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="external_sale_invoice_inherit_res_partner_views" model="ir.ui.view">
+        <field name="name">external.sale.invoice.inherit.res.partner.views</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="x_external_token" readonly="1" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

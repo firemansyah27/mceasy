@@ -1,0 +1,45 @@
+# ================================
+# Python / FastAPI
+# ================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+.env
+.venv/
+*.sqlite3
+instance/
+coverage.*
+htmlcov/
+.cache/
+.mypy_cache/
+.pytest_cache/
+.pyre/
+
+# VS Code / IDE
+.vscode/
+.idea/
+
+# Logs and test outputs
+*.log
+*.out
+
+# Pydantic compiled JSON schemas
+*.schema.json
+
+# ================================
+# Odoo
+# ================================
+*.pyc
+*.pyo
+*.swp
+*.swo
+*.egg-info/
+*.DS_Store
+*.~*
+*.bak
+*.orig
+*.rej
+*~

@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  postgres-15:
+    image: postgres:15
+    container_name: postgres15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - database-data-volume:/var/lib/postgresql/data
+
+  odoo:
+    image: odoo:17
+    container_name: odoo17
+    depends_on:
+      - postgres-15
+    ports:
+      - "8069:${ODOO_PORT:-8069}"
+    volumes:
+      - odoo-data-volume:/var/lib/odoo
+      - ./odoo_module/config:/etc/odoo
+      - ./odoo_module/addons:/mnt/extra-addons
+    environment:
+      - HOST=postgres-15
+      - USER=${POSTGRES_USER}
+      - PASSWORD= ${POSTGRES_PASSWORD}
+    
+  client_app:
+    build:
+      context: ./client_app
+      dockerfile: Dockerfile
+    container_name: client-app
+    restart: unless-stopped
+    depends_on:
+      - odoo
+    env_file:
+      - .env
+    ports:
+      - "8000:${APP_PORT:-8000}"
+    volumes:
+      - ./client_app:/code
+
+volumes:
+  odoo-data-volume:
+  database-data-volume:
