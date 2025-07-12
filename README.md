@@ -70,7 +70,7 @@ Setelah halaman dokumentasi Swagger terbuka:
 
 1. Buat Sale Order (melalui UI Odoo atau via API)
 2. Klik **Confirm**
-3. Update kolom **Delivered Quantity** untuk memicu pembuatan invoice
+3. Update kolom **Delivered Quantity** untuk merubah invoice status menjadi To Invoice
 
 ---
 
